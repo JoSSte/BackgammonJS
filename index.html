@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Backgammon</title>
+    <style>
+        #bgBoard {
+            border: 1px solid black;
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 0;
+        }
+
+        #bgPieceLayer {
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Backgammon</h1>
+    <p>
+        Ratio is either 44x55 = 1,25 or 66X88 = 1,333
+    </p>
+    <div style="position: relative;">
+        <canvas id="bgBoard"></canvas>
+        <canvas id="bgPieceLayer"></canvas>
+    </div>
+    <script>
+        let pieces = new Array();
+        let barWidth = 50;
+        //point dimentions will be overwritten by drawBoard();
+        let pointWidth = 10;
+        let pointHeight = 30;
+
+        function drawBoard() {
+            var w = 888;
+            var h = 666;
+
+            var boardCanvas = document.getElementById('bgBoard');
+            var pieceCanvas = document.getElementById('bgPieceLayer');
+            boardCanvas.style.width = w + "px";
+            boardCanvas.style.height = h + "px";
+            pieceCanvas.style.width = w + "px";
+            pieceCanvas.style.height = h + "px";
+            // Set actual size in memory (scaled to account for extra pixel density).
+            var scale = window.devicePixelRatio; // Change to 1 on retina screens to see blurry canvas.
+            boardCanvas.width = Math.floor(w * scale);
+            boardCanvas.height = Math.floor(h * scale);
+            pieceCanvas.width = Math.floor(w * scale);
+            pieceCanvas.height = Math.floor(h * scale);
+            var cWidth = boardCanvas.width;
+            var cHeight = boardCanvas.height;
+            if (boardCanvas.getContext) {
+                //calculate cells dimensions
+                pointWidth = (cWidth - barWidth) / 12;
+                pointHeight = (cHeight - barWidth) / 2;
+                var ctx = boardCanvas.getContext('2d');
+
+                var pointIdx = 0;
+                var evenFill = 'grey';
+                var oddFill = 'maroon';
+                //top points
+                for (let x = 0; x < 12; x++) {
+                    let offset = Math.floor(pointWidth * x);
+                    //if 7-12, add bar width
+                    if (x > 5) {
+                        offset += barWidth;
+                    }
+                    var pointPath = new Path2D();
+                    pointPath.moveTo(offset, 0);
+                    pointPath.lineTo(pointWidth + offset, 0);
+                    pointPath.lineTo(pointWidth + offset - Math.floor(pointWidth / 2), pointHeight);
+                    ctx.fillStyle = ((x % 2 == 0) ? evenFill : oddFill)
+                    ctx.fill(pointPath);
+                }
+
+                //bottom points
+                for (let x = 0; x < 12; x++) {
+                    let offset = Math.floor(pointWidth * x);
+                    //if 7-12, add bar width
+                    if (x > 5) {
+                        offset += barWidth;
+                    }
+                    var pointPath = new Path2D();
+                    pointPath.moveTo(offset, cHeight);
+                    pointPath.lineTo(pointWidth + offset, cHeight);
+                    pointPath.lineTo(pointWidth + offset - Math.floor(pointWidth / 2), pointHeight + barWidth);
+                    ctx.fillStyle = ((x % 2 == 0) ? oddFill : evenFill)
+                    ctx.fill(pointPath);
+                }
+                
+                initPieces(pieceCanvas.getContext('2d'));
+            }
+        }
+        function initPieces(ctx) {
+            const pieceWidth = Math.floor(pointWidth / 2);
+            ctx.beginPath();
+            ctx.arc(pieceWidth, pieceWidth, pieceWidth, Math.PI * 2, false);
+            ctx.strokeStyle = 'black';
+            ctx.fillStyle = 'white';
+            ctx.stroke();
+            ctx.fill();
+        }
+        drawBoard();
+    </script>
+</body>
+
+</html>
