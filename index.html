@@ -126,28 +126,28 @@
                     ctx.fill(pointPath);
                 }
 
-                initPieces(pieceCanvas.getContext('2d'));
+                drawPieces(pieceCanvas.getContext('2d'));
             }
         }
 
         /**
          * Draws pieces to the board based on the 'pieces' object
          */
-        function initPieces(ctx) {
+        function drawPieces(ctx) {
             for (const col of ['black', 'white']) {
                 for (let placeCtr = 0; placeCtr < 25; placeCtr++) {
                     let place = 'top';
                     if (placeCtr == 24) {
                         place = 'bar';
-                    } else if (placeCtr > 12) {
+                    } else if (placeCtr > 11) {
                         place = 'bot';
                     }
                     //console.log(col + ' ' + placeCtr + ' ' + pieces[col][placeCtr] + ' ' + place);
                     if (pieces[col][placeCtr] > 0) {
-                        let offset = (placeCtr > 12) ? placeCtr - 12 : placeCtr;
+                        let offset = (placeCtr > 11) ? placeCtr - 12 : placeCtr;
                         for (let pcCtr = 1; pcCtr <= pieces[col][placeCtr]; pcCtr++) {
-                            if(place == 'bar'){
-                                barCount ++;
+                            if (place == 'bar') {
+                                barCount++;
                             }
                             drawPiece(ctx, col, place, offset, pcCtr);
                         }
@@ -174,7 +174,7 @@
             if (place == 'top') {
                 y = Math.floor(pieceRadius * numDraw);
             } else if (place == 'bot') {
-                    y = h - Math.floor(pieceRadius * numDraw);
+                y = h - Math.floor(pieceRadius * numDraw);
             } else {//bar
                 //TODO: show more pieces
                 x = Math.floor(w / 2);
@@ -188,7 +188,7 @@
             //TODO: show number for more than 5 pieces
 
             let stroke = 'black';
-            if(color == 'black'){
+            if (color == 'black') {
                 stroke = 'silver';
             }
 
