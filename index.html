@@ -1,209 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang='en'>
 
 <head>
     <title>Backgammon</title>
     <style>
-        #bgBoard {
-            border: 1px solid black;
+        /* common styles */
+        #bgBoard, #bgPieceLayer, #bgDiceLayer {
             position: absolute;
             left: 0;
             top: 0;
+            width: 100%;
+        }
+
+        #bgBoard {
+            border: 1px solid black;
             z-index: 0;
         }
 
         #bgPieceLayer {
-            position: absolute;
-            left: 0;
-            top: 0;
             z-index: 1;
         }
 
         #bgDiceLayer {
-            position: absolute;
-            left: 0;
-            top: 0;
             z-index: 2;
         }
     </style>
 </head>
-
 <body>
-    <h1>Backgammon</h1>
-    <p>
-        Ratio is either 44x55 = 1,25 or 66X88 = 1,333
-    </p>
     <div style="position: relative;">
         <canvas id="bgBoard"></canvas>
         <canvas id="bgPieceLayer"></canvas>
         <canvas id="bgDiceLayer"></canvas>
     </div>
-    <script>
-        //board dimensions
-        const w = 888;
-        const h = 666;
-        let pieces = {
-
-            'black': [
-                0, 0, 0, 0, 3, 0,  //top left
-                5, 0, 0, 0, 0, 0,  //top right
-                5, 0, 0, 0, 0, 0,  //bot left
-                0, 0, 0, 0, 0, 2,  //bot right
-                0                  //bar
-            ],
-            'white': [
-                5, 0, 0, 0, 0, 0, //top left
-                0, 0, 0, 0, 0, 2, //top right
-                0, 0, 0, 0, 3, 0, //bot left
-                5, 0, 0, 0, 0, 0, //bot right
-                0                 //bar
-            ]
-        };
-        let barCount = 0;
-        let barWidth = 50;
-        //point dimentions will be overwritten by drawBoard();
-        let pointWidth = 10;
-        let pointHeight = 30;
-        let pieceRadius = 8;
-
-        function drawBoard() {
-            /****** Set up board dimensions and canvas scale *******/
-
-            var boardCanvas = document.getElementById('bgBoard');
-            var pieceCanvas = document.getElementById('bgPieceLayer');
-            boardCanvas.style.width = w + "px";
-            boardCanvas.style.height = h + "px";
-            pieceCanvas.style.width = w + "px";
-            pieceCanvas.style.height = h + "px";
-
-            // Set actual size in memory (scaled to account for extra pixel density).
-            var scale = window.devicePixelRatio; // Change to 1 on retina screens to see blurry canvas.
-            boardCanvas.width = Math.floor(w * scale);
-            boardCanvas.height = Math.floor(h * scale);
-            pieceCanvas.width = Math.floor(w * scale);
-            pieceCanvas.height = Math.floor(h * scale);
-
-            /****** Draw board *******/
-
-            if (boardCanvas.getContext) {
-                //calculate cells dimensions
-                pointWidth = (w - barWidth) / 12;
-                pointHeight = (h - barWidth) / 2;
-                //calculate piece radius
-                pieceRadius = Math.floor(pointWidth / 2);
-                var ctx = boardCanvas.getContext('2d');
-
-                var pointIdx = 0;
-                var evenFill = 'grey';
-                var oddFill = 'maroon';
-                //draw top points
-                for (let x = 0; x < 12; x++) {
-                    let offset = Math.floor(pointWidth * x);
-                    //if 7-12, add bar width
-                    if (x > 5) {
-                        offset += barWidth;
-                    }
-                    var pointPath = new Path2D();
-                    pointPath.moveTo(offset, 0);
-                    pointPath.lineTo(pointWidth + offset, 0);
-                    pointPath.lineTo(pointWidth + offset - Math.floor(pointWidth / 2), pointHeight);
-                    ctx.fillStyle = ((x % 2 == 0) ? evenFill : oddFill)
-                    ctx.fill(pointPath);
-                }
-
-                //draw bottom points
-                for (let x = 0; x < 12; x++) {
-                    let offset = Math.floor(pointWidth * x);
-                    //if 7-12, add bar width
-                    if (x > 5) {
-                        offset += barWidth;
-                    }
-                    var pointPath = new Path2D();
-                    pointPath.moveTo(offset, h);
-                    pointPath.lineTo(pointWidth + offset, h);
-                    pointPath.lineTo(pointWidth + offset - Math.floor(pointWidth / 2), pointHeight + barWidth);
-                    ctx.fillStyle = ((x % 2 == 0) ? oddFill : evenFill)
-                    ctx.fill(pointPath);
-                }
-
-                drawPieces(pieceCanvas.getContext('2d'));
-            }
-        }
-
-        /**
-         * Draws pieces to the board based on the 'pieces' object
-         */
-        function drawPieces(ctx) {
-            for (const col of ['black', 'white']) {
-                for (let placeCtr = 0; placeCtr < 25; placeCtr++) {
-                    let place = 'top';
-                    if (placeCtr == 24) {
-                        place = 'bar';
-                    } else if (placeCtr > 11) {
-                        place = 'bot';
-                    }
-                    //console.log(col + ' ' + placeCtr + ' ' + pieces[col][placeCtr] + ' ' + place);
-                    if (pieces[col][placeCtr] > 0) {
-                        let offset = (placeCtr > 11) ? placeCtr - 12 : placeCtr;
-                        for (let pcCtr = 1; pcCtr <= pieces[col][placeCtr]; pcCtr++) {
-                            if (place == 'bar') {
-                                barCount++;
-                            }
-                            drawPiece(ctx, col, place, offset, pcCtr);
-                        }
-                    }
-                }
-            }
-        }
-
-        /**
-         * ctx = 2d drawing context
-         * color = 'black' or 'white'
-         * place = 'top' 'bot' 'bar'
-         * idx = index position (void in case place = 'bar') 
-         * num = piece number at this position
-         */
-        function drawPiece(ctx, color, place, idx, num) {
-            let numDraw = num;
-            let x = pieceRadius;
-            let y = pieceRadius;
-            if (num > 5) {
-                numDraw = 5
-            }
-            x = Math.floor(pointWidth * idx) + pieceRadius;
-            if (place == 'top') {
-                y = Math.floor(pieceRadius * numDraw);
-            } else if (place == 'bot') {
-                y = h - Math.floor(pieceRadius * numDraw);
-            } else {//bar
-                //TODO: show more pieces
-                x = Math.floor(w / 2);
-                y = Math.floor((h / 2) + barCount * pieceRadius);
-            }
-            // take bar width into account
-            if (idx > 5 && place != 'bar') {
-                x += barWidth;
-            }
-
-            //TODO: show number for more than 5 pieces
-
-            let stroke = 'black';
-            if (color == 'black') {
-                stroke = 'silver';
-            }
-
-            console.log(color + ' ' + place + ' ' + idx + ' ' + num)
-
-            ctx.beginPath();
-            ctx.arc(x, y, pieceRadius, Math.PI * 2, false);
-            ctx.strokeStyle = stroke;
-            ctx.fillStyle = color;
-            ctx.stroke();
-            ctx.fill();
-        }
-
-        drawBoard();
-    </script>
+    <script src="backgammon.js"></script>
 </body>
-
 </html>
