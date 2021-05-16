@@ -1,7 +1,10 @@
 //board dimensions
 let dim = getDimensions();
-const w = dim[1];
-const h = dim[0];
+const scale = window.devicePixelRatio;
+const w = dim.w;
+const h = dim.h;
+const scaledWidth = Math.floor(w * scale);
+const scaledHeight = Math.floor(h * scale);
 let pieces = {
 
     'black': [
@@ -26,17 +29,18 @@ let pointWidth = 10;
 let pointHeight = 30;
 let pieceRadius = 8;
 
-function getDimensions(){
+function getDimensions() {
     const board = document.getElementById('bgBoard');
     let width = board.clientWidth;
     let height = Math.floor(width * 0.667)
     let availHeight = document.body.scrollHeight;
     //if we don't have enough height, reduce width
-    if (availHeight < height){
-        width = availHeight * 1.333;
+    if (availHeight < height) {
+        console.log("we don't have enough height(" + availHeight + " < " + height + "), reducing the width to " + Math.floor(availHeight * 1.333) + " instead of " + width);
+        width = Math.floor(availHeight * 1.333);
         height = availHeight;
     }
-    return [height, width];
+    return { h: height, w: width };
 }
 
 
@@ -51,23 +55,25 @@ function drawBoard() {
     pieceCanvas.style.height = h + "px";
 
     // Set actual size in memory (scaled to account for extra pixel density).
-    var scale = window.devicePixelRatio; // Change to 1 on retina screens to see blurry canvas.
-    boardCanvas.width = Math.floor(w * scale);
-    boardCanvas.height = Math.floor(h * scale);
-    pieceCanvas.width = Math.floor(w * scale);
-    pieceCanvas.height = Math.floor(h * scale);
+    boardCanvas.width = scaledWidth;
+    boardCanvas.height = scaledHeight;
+    pieceCanvas.width = scaledWidth;
+    pieceCanvas.height = scaledHeight;
 
     /****** Draw board *******/
 
     if (boardCanvas.getContext) {
         //calculate cells dimensions
-        pointWidth = (w - barWidth) / 12;
-        pointHeight = (h - barWidth) / 2;
+        pointWidth = Math.floor((scaledWidth - barWidth) / 12);
+        pointHeight = Math.floor((scaledHeight - barWidth) / 2);
+        console.log('point width: ' + pointWidth);
+
         //calculate piece radius
-        pieceRadius = Math.floor(pointWidth / 2);
+        pieceRadius = Math.floor(pointWidth / 2.5);
+        console.log('piece radius: ' + pieceRadius);
         var ctx = boardCanvas.getContext('2d');
 
-        var pointIdx = 0;
+        //var pointIdx = 0;
         var evenFill = 'grey';
         var oddFill = 'maroon';
         //draw top points
@@ -93,8 +99,8 @@ function drawBoard() {
                 offset += barWidth;
             }
             var pointPath = new Path2D();
-            pointPath.moveTo(offset, h);
-            pointPath.lineTo(pointWidth + offset, h);
+            pointPath.moveTo(offset, scaledHeight);
+            pointPath.lineTo(pointWidth + offset, scaledHeight);
             pointPath.lineTo(pointWidth + offset - Math.floor(pointWidth / 2), pointHeight + barWidth);
             ctx.fillStyle = ((x % 2 == 0) ? oddFill : evenFill)
             ctx.fill(pointPath);
@@ -139,20 +145,20 @@ function drawPieces(ctx) {
  */
 function drawPiece(ctx, color, place, idx, num) {
     let numDraw = num;
-    let x = pieceRadius;
+    let x = Math.floor(pointWidth * idx + pieceRadius + (pointWidth - (2.25 * pieceRadius)));
+    console.log(x);
     let y = pieceRadius;
     if (num > 5) {
         numDraw = 5
     }
-    x = Math.floor(pointWidth * idx) + pieceRadius;
     if (place == 'top') {
-        y = Math.floor(pieceRadius * numDraw);
+        y = Math.floor(pieceRadius * 2 * numDraw) - pieceRadius;
     } else if (place == 'bot') {
-        y = h - Math.floor(pieceRadius * numDraw);
+        y = scaledHeight - Math.floor(pieceRadius * 2 * numDraw) + pieceRadius;
     } else {//bar
         //TODO: show more pieces
-        x = Math.floor(w / 2);
-        y = Math.floor((h / 2) + barCount * pieceRadius);
+        x = Math.floor(scaledWidth / 2);
+        y = Math.floor((scaledHeight / 2) + barCount * pieceRadius);
     }
     // take bar width into account
     if (idx > 5 && place != 'bar') {
@@ -166,7 +172,8 @@ function drawPiece(ctx, color, place, idx, num) {
         stroke = 'silver';
     }
 
-    console.log(color + ' ' + place + ' ' + idx + ' ' + num)
+    //console.log(color + ' ' + place + ' ' + idx + ' ' + num)
+    //console.log(x + ' ' + y)
 
     ctx.beginPath();
     ctx.arc(x, y, pieceRadius, Math.PI * 2, false);
@@ -177,3 +184,33 @@ function drawPiece(ctx, color, place, idx, num) {
 }
 
 drawBoard();
+
+// function to get the canvas coordinate of a mouse click
+function getPosition(obj) {
+    var curleft = 0, curtop = 0;
+    if (obj.offsetParent) {
+        do {
+            curleft += obj.offsetLeft;
+            curtop += obj.offsetTop;
+        } while (obj = obj.offsetParent);
+        return { x: curleft, y: curtop };
+    }
+    return undefined;
+}
+
+// add event handler to see if we have clicked a game piece
+document.getElementById('bgPieceLayer').addEventListener("click", function (e) {
+    var pos = getPosition(this);
+    var x = e.pageX - pos.x;
+    var y = e.pageY - pos.y;
+    var coord = "x=" + x + ", y=" + y;
+    var c = this.getContext('2d');
+    var p = c.getImageData(x, y, 1, 1).data;
+
+    // If transparency on the image
+    if ((p[0] == 0) && (p[1] == 0) && (p[2] == 0) && (p[3] == 0)) {
+        console.log("click did not hit agame piece");
+        return false;
+    }
+    console.log(p[0] + ' ' + p[1] + ' ' + p[2] + " " + coord);
+});
