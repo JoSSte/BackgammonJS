@@ -5,7 +5,7 @@
     <title>Backgammon</title>
     <style>
         /* common styles */
-        #bgBoard, #bgPieceLayer, #bgDiceLayer {
+        .boardLayer {
             position: absolute;
             left: 0;
             top: 0;
@@ -24,13 +24,18 @@
         #bgDiceLayer {
             z-index: 2;
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div style="position: relative;">
-        <canvas id="bgBoard"></canvas>
-        <canvas id="bgPieceLayer"></canvas>
-        <canvas id="bgDiceLayer"></canvas>
+        <canvas class="boardLayer" id="bgBoard"></canvas>
+        <canvas class="boardLayer" id="bgPieceLayer"></canvas>
+        <canvas class="boardLayer hidden" id="possibleMovesLayer"></canvas>
+        <canvas class="boardLayer hidden" id="bgDiceLayer"></canvas>
     </div>
     <script src="backgammon.js"></script>
 </body>
