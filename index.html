@@ -26,6 +26,10 @@
             z-index: 2;
         }
 
+        #possibleMovesLayer {
+            z-index: 3;
+        }
+
         .hidden {
             display: none;
         }
@@ -35,10 +39,10 @@
 <body>
     <button onclick="drawBoard()">Redraw Board</button>
     <button onclick="resetBoard()">Reset Board</button>
-    <button onclick="showMoves()">Toggle Possible Moves</button>
+    <button onclick="hideMoves()">Toggle Possible Moves</button>
     <button onclick="roll()" disabled>Roll dice</button>
     <input type="number" id="d1" min="1" max="6" value="2">
-    <input type="number" id="d1" min="1" max="6" value="3">
+    <input type="number" id="d2" min="1" max="6" value="3">
     <input type="radio" id="white" name="currPlayer" value="white" checked><label for="white">White</label>
     <input type="radio" id="black" name="currPlayer" value="black"><label for="black">Black</label>
     <div style="position: relative;">
