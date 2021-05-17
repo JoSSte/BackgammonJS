@@ -2,7 +2,7 @@
 <html lang='en'>
 
 <head>
-    <meta charset="utf-8"/>
+    <meta charset="utf-8" />
     <title>Backgammon</title>
     <style>
         /* common styles */
@@ -31,13 +31,16 @@
         }
     </style>
 </head>
+
 <body>
     <button onclick="drawBoard()">Redraw Board</button>
     <button onclick="resetBoard()">Reset Board</button>
-    <button onclick="showMoves()">Show Possible Moves</button>
+    <button onclick="showMoves()">Toggle Possible Moves</button>
     <button onclick="roll()" disabled>Roll dice</button>
     <input type="number" id="d1" min="1" max="6" value="2">
     <input type="number" id="d1" min="1" max="6" value="3">
+    <input type="radio" id="white" name="currPlayer" value="white" checked><label for="white">White</label>
+    <input type="radio" id="black" name="currPlayer" value="black"><label for="black">Black</label>
     <div style="position: relative;">
         <canvas class="boardLayer" id="bgBoard"></canvas>
         <canvas class="boardLayer" id="bgPieceLayer"></canvas>
@@ -46,4 +49,5 @@
     </div>
     <script src="backgammon.js"></script>
 </body>
+
 </html>
