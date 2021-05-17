@@ -5,7 +5,7 @@ const w = dim.w;
 const h = dim.h;
 const scaledWidth = Math.floor(w * scale);
 const scaledHeight = Math.floor(h * scale);
-let pieces = {
+const defaultPieces = {
 
     'black': [
         0, 0, 0, 0, 3, 0,  //top left
@@ -22,6 +22,7 @@ let pieces = {
         0                 //bar
     ]
 };
+let pieces = JSON.parse(JSON.stringify(defaultPieces));
 let barCount = 0;
 let barWidth = 50;
 //point dimentions will be overwritten by drawBoard();
@@ -42,7 +43,6 @@ function getDimensions() {
     }
     return { h: height, w: width };
 }
-
 
 function drawBoard() {
     /****** Set up board dimensions and canvas scale *******/
@@ -73,7 +73,6 @@ function drawBoard() {
         console.log('piece radius: ' + pieceRadius);
         var ctx = boardCanvas.getContext('2d');
 
-        //var pointIdx = 0;
         var evenFill = 'grey';
         var oddFill = 'maroon';
         //draw top points
@@ -98,22 +97,22 @@ function drawBoard() {
             if (x > 5) {
                 offset += barWidth;
             }
-            var pointPath = new Path2D();
-            pointPath.moveTo(offset, scaledHeight);
-            pointPath.lineTo(pointWidth + offset, scaledHeight);
-            pointPath.lineTo(pointWidth + offset - Math.floor(pointWidth / 2), pointHeight + barWidth);
+            var pointPath2 = new Path2D();
+            pointPath2.moveTo(offset, scaledHeight);
+            pointPath2.lineTo(pointWidth + offset, scaledHeight);
+            pointPath2.lineTo(pointWidth + offset - Math.floor(pointWidth / 2), pointHeight + barWidth);
             ctx.fillStyle = ((x % 2 == 0) ? oddFill : evenFill)
-            ctx.fill(pointPath);
+            ctx.fill(pointPath2);
         }
 
-        drawPieces(pieceCanvas.getContext('2d'));
+        drawPieces();
     }
 }
 
 /**
  * Draws pieces to the board based on the 'pieces' object
  */
-function drawPieces(ctx) {
+function drawPieces() {
     for (const col of ['black', 'white']) {
         for (let placeCtr = 0; placeCtr < 25; placeCtr++) {
             let place = 'top';
@@ -129,7 +128,7 @@ function drawPieces(ctx) {
                     if (place == 'bar') {
                         barCount++;
                     }
-                    drawPiece(ctx, col, place, offset, pcCtr);
+                    drawPiece(col, place, offset, pcCtr);
                 }
             }
         }
@@ -137,16 +136,15 @@ function drawPieces(ctx) {
 }
 
 /**
- * ctx = 2d drawing context
  * color = 'black' or 'white'
  * place = 'top' 'bot' 'bar'
  * idx = index position (void in case place = 'bar') 
  * num = piece number at this position
  */
-function drawPiece(ctx, color, place, idx, num) {
+function drawPiece(color, place, idx, num) {
+    const ctx = document.getElementById('bgPieceLayer').getContext('2d');
     let numDraw = num;
     let x = Math.floor(pointWidth * idx + pieceRadius + (pointWidth - (2.25 * pieceRadius)));
-    console.log(x);
     let y = pieceRadius;
     if (num > 5) {
         numDraw = 5
@@ -165,12 +163,8 @@ function drawPiece(ctx, color, place, idx, num) {
         x += barWidth;
     }
 
-    //TODO: show number for more than 5 pieces
-
+    //TODO: show number on top pieces, for more than 5 pieces
     let stroke = '#222222';
-
-    //console.log(color + ' ' + place + ' ' + idx + ' ' + num)
-    //console.log(x + ' ' + y)
 
     ctx.beginPath();
     ctx.arc(x, y, pieceRadius, Math.PI * 2, false);
@@ -180,7 +174,22 @@ function drawPiece(ctx, color, place, idx, num) {
     ctx.fill();
 }
 
-drawBoard();
+function clearPieceLayer() {
+    let canvas = document.getElementById('bgPieceLayer');
+    let ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+/**
+ * Reset Pieces and redraw
+ */
+function resetBoard() {
+    console.log('Resetting board');
+    pieces = JSON.parse(JSON.stringify(defaultPieces));
+    clearPieceLayer();
+    drawPieces();
+}
+
 
 // function to get the canvas coordinate of a mouse click
 function getPosition(obj) {
@@ -203,31 +212,43 @@ document.getElementById('bgPieceLayer').addEventListener("click", function (e) {
     var coord = "x=" + x + ", y=" + y;
     var c = this.getContext('2d');
     var p = c.getImageData(x, y, 1, 1).data;
-	var col = p[0] + p[1] + p[2];
-	var color = 'unknown';
+    var col = p[0] + p[1] + p[2];
+    var color = 'unknown';
 
     // did we click a game piece (color != transparent)
-    if ( col + p[3] == 0) {
+    if (col + p[3] == 0) {
         console.log("click did not hit agame piece");
         return false;
-    } else if ( col == 765 ){
-		color = 'white';
-	} else if ( col == 0 ){
-		color = 'black';
-	} 
-	if (color == 'unknown'){
-		console.log("unknown color - edge maybe?");
+    } else if (col == 765) {
+        color = 'white';
+    } else if (col == 0) {
+        color = 'black';
+    }
+    if (color == 'unknown') {
+        console.log("unknown color - edge maybe?");
         return false;
-	}
-	let barW = 0;
-	if(x > scaledWidth/2){
-		barW = barWidth;
-	}
-    console.log(p[0] + ' ' + p[1] + ' ' + p[2] + " " +color +  " " + coord);
-	let estimatedOffset = Math.floor((x - barW)/pointWidth);
-	if(y > scaledHeight/2){
-		estimatedOffset += 12;
-	}
-	console.log('offset: ' + estimatedOffset);
-	console.log(pieces[color][estimatedOffset] + ' ' + color + ' pieces')
+    }
+    let barW = 0;
+    if (x > scaledWidth / 2) {
+        barW = barWidth;
+    }
+    console.log(p[0] + ' ' + p[1] + ' ' + p[2] + " " + color + " " + coord);
+    let estimatedOffset = Math.floor((x - barW) / pointWidth);
+    if (y > scaledHeight / 2) {
+        estimatedOffset += 12;
+    }
+    console.log('offset: ' + estimatedOffset);
+    console.log(pieces[color][estimatedOffset] + ' ' + color + ' pieces')
 });
+
+function showMoves() {
+    let movesLayer = document.getElementById('possibleMovesLayer');
+    let currColor = ((document.getElementById('white').checked) ? 'white' : 'black');
+    movesLayer.classList.toggle('hidden');
+    console.log('current player = ' + currColor);
+}
+
+
+/* Start game */
+
+drawBoard();
