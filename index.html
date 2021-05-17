@@ -2,6 +2,7 @@
 <html lang='en'>
 
 <head>
+    <meta charset="utf-8"/>
     <title>Backgammon</title>
     <style>
         /* common styles */
@@ -31,6 +32,12 @@
     </style>
 </head>
 <body>
+    <button onclick="drawBoard()">Redraw Board</button>
+    <button onclick="resetBoard()">Reset Board</button>
+    <button onclick="showMoves()">Show Possible Moves</button>
+    <button onclick="roll()" disabled>Roll dice</button>
+    <input type="number" id="d1" min="1" max="6" value="2">
+    <input type="number" id="d1" min="1" max="6" value="3">
     <div style="position: relative;">
         <canvas class="boardLayer" id="bgBoard"></canvas>
         <canvas class="boardLayer" id="bgPieceLayer"></canvas>
