@@ -167,10 +167,7 @@ function drawPiece(ctx, color, place, idx, num) {
 
     //TODO: show number for more than 5 pieces
 
-    let stroke = 'black';
-    if (color == 'black') {
-        stroke = 'silver';
-    }
+    let stroke = '#222222';
 
     //console.log(color + ' ' + place + ' ' + idx + ' ' + num)
     //console.log(x + ' ' + y)
@@ -206,11 +203,31 @@ document.getElementById('bgPieceLayer').addEventListener("click", function (e) {
     var coord = "x=" + x + ", y=" + y;
     var c = this.getContext('2d');
     var p = c.getImageData(x, y, 1, 1).data;
+	var col = p[0] + p[1] + p[2];
+	var color = 'unknown';
 
-    // If transparency on the image
-    if ((p[0] == 0) && (p[1] == 0) && (p[2] == 0) && (p[3] == 0)) {
+    // did we click a game piece (color != transparent)
+    if ( col + p[3] == 0) {
         console.log("click did not hit agame piece");
         return false;
-    }
-    console.log(p[0] + ' ' + p[1] + ' ' + p[2] + " " + coord);
+    } else if ( col == 765 ){
+		color = 'white';
+	} else if ( col == 0 ){
+		color = 'black';
+	} 
+	if (color == 'unknown'){
+		console.log("unknown color - edge maybe?");
+        return false;
+	}
+	let barW = 0;
+	if(x > scaledWidth/2){
+		barW = barWidth;
+	}
+    console.log(p[0] + ' ' + p[1] + ' ' + p[2] + " " +color +  " " + coord);
+	let estimatedOffset = Math.floor((x - barW)/pointWidth);
+	if(y > scaledHeight/2){
+		estimatedOffset += 12;
+	}
+	console.log('offset: ' + estimatedOffset);
+	console.log(pieces[color][estimatedOffset] + ' ' + color + ' pieces')
 });
