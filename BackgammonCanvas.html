@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Backgammon</title>
+    <style>
+        /* common styles */
+        .boardLayer {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+
+        #bgBoard {
+            border: 1px solid black;
+            z-index: 0;
+        }
+
+        #bgPieceLayer {
+            z-index: 1;
+        }
+
+        #bgDiceLayer {
+            z-index: 2;
+        }
+
+        #possibleMovesLayer {
+            z-index: 3;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <button onclick="drawBoard()">Redraw Board</button>
+    <button onclick="resetBoard()">Reset Board</button>
+    <button onclick="hideMoves()">Toggle Possible Moves</button>
+    <button onclick="roll()" disabled>Roll dice</button>
+    <input type="number" id="d1" min="1" max="6" value="2">
+    <input type="number" id="d2" min="1" max="6" value="3">
+    <input type="radio" id="white" name="currPlayer" value="white" checked><label for="white">White</label>
+    <input type="radio" id="black" name="currPlayer" value="black"><label for="black">Black</label>
+    <div style="position: relative;">
+        <canvas class="boardLayer" id="bgBoard"></canvas>
+        <canvas class="boardLayer" id="bgPieceLayer"></canvas>
+        <canvas class="boardLayer hidden" id="possibleMovesLayer"></canvas>
+        <canvas class="boardLayer hidden" id="bgDiceLayer"></canvas>
+    </div>
+    <script src="backgammon.js"></script>
+</body>
+
+</html>
