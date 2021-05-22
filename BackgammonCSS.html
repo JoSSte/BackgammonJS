@@ -6,24 +6,38 @@
     <title>Backgammon</title>
     <style>
         .main {
-            height: 888px;
+            height: 700px;
+            width: 900px;
         }
 
         .board {
-            position: absolute;
+            /*            position: absolute;*/
             left: 0;
             top: 0;
             width: 100%;
-            height : 100%;
+            height: 100%;
             display: flex;
             flex-flow: row;
+        }
+
+        .homeParent {
+            width: 100px;
+            height: 100%;
+            background-color: silver;
+            display: flex;
+            flex-flow: column;
+        }
+
+        .home {
+            width: 100%;
+            height: 50%;
         }
 
         .halfboard {
             position: relative;
             top: 0;
             bottom: 0;
-            border: 2px solid black;
+            /*border: 2px solid black;*/
             width: 100%;
             height: 100%;
             display: flex;
@@ -31,15 +45,15 @@
         }
 
         .quarterboard {
-            border: 1px solid pink;
-            width: 50%;
+            /*border: 1px solid pink;*/
+            width: 100%;
             height: 50%;
             display: flex;
             flex-flow: row;
         }
 
         .point {
-            border: 1px solid blue;
+            /*border: 1px solid blue;*/
             width: 16.67%;
             height: 100%;
         }
@@ -49,9 +63,29 @@
         }
 
         .bar {
-            width: 50px;
+            width: 100px;
             height: 100%;
             background-color: brown;
+        }
+
+        .dark {
+            /*background-color: maroon;*/
+            background-image: url("point_bot_dark.svg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
+        .light {
+            /*background-color: blanchedalmond;*/
+            background-image: url("point_bot_light.svg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
+        .top>.point {
+            transform: rotate(180deg);
         }
     </style>
 </head>
@@ -68,41 +102,45 @@
     <div class="main">
         <div class="board">
             <div class="halfboard">
-                <div class="quarterboard">
-                    <div class="point">1</div>
-                    <div class="point">2</div>
-                    <div class="point">3</div>
-                    <div class="point">4</div>
-                    <div class="point">5</div>
-                    <div class="point">6</div>
+                <div class="quarterboard top">
+                    <div class="point light">1</div>
+                    <div class="point dark">2</div>
+                    <div class="point light">3</div>
+                    <div class="point dark">4</div>
+                    <div class="point light">5</div>
+                    <div class="point dark">6</div>
                 </div>
-                <div class="quarterboard">
-                    <div class="point">7</div>
-                    <div class="point">8</div>
-                    <div class="point">9</div>
-                    <div class="point">10</div>
-                    <div class="point">11</div>
-                    <div class="point">12</div>
+                <div class="quarterboard bottom">
+                    <div class="point dark"></div>
+                    <div class="point light"></div>
+                    <div class="point dark"></div>
+                    <div class="point light"></div>
+                    <div class="point dark"></div>
+                    <div class="point light"></div>
                 </div>
             </div>
             <div class="bar">bar</div>
-            <div clasS="halfboard">
-                <div class="quarterboard">
-                    <div class="point">13</div>
-                    <div class="point">14</div>
-                    <div class="point">15</div>
-                    <div class="point">16</div>
-                    <div class="point">17</div>
-                    <div class="point">18</div>
+            <div class="halfboard">
+                <div class="quarterboard top">
+                    <div class="point light">13</div>
+                    <div class="point dark">14</div>
+                    <div class="point light">15</div>
+                    <div class="point dark">16</div>
+                    <div class="point light">17</div>
+                    <div class="point dark">18</div>
                 </div>
-                <div class="quarterboard">
-                    <div class="point">19</div>
-                    <div class="point">20</div>
-                    <div class="point">21</div>
-                    <div class="point">22</div>
-                    <div class="point">23</div>
-                    <div class="point">24</div>
+                <div class="quarterboard bottom">
+                    <div class="point dark">19</div>
+                    <div class="point light">20</div>
+                    <div class="point dark">21</div>
+                    <div class="point light">22</div>
+                    <div class="point dark">23</div>
+                    <div class="point light">24</div>
                 </div>
+            </div>
+            <div class="homeParent">
+                <div id="whiteome" class="home">white home</div>
+                <div id="black" class="home">black home</div>
             </div>
         </div>
     </div>
