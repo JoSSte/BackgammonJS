@@ -76,3 +76,18 @@
 .top>.point {
     transform: rotate(180deg);
 }
+
+.pip {
+    background-repeat: no-repeat;
+    background-position: center center;
+    height: 40px;
+    width: 40px;
+}
+
+.pip.black {
+    background-image: url("pip_black.svg");
+}
+
+.pip.white {
+    background-image: url("pip_white.svg");
+}
