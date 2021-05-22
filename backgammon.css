@@ -4,7 +4,6 @@
 }
 
 .board {
-    /*            position: absolute;*/
     left: 0;
     top: 0;
     width: 100%;
@@ -43,7 +42,6 @@
     flex-flow: row;
 }
 
-
 .hidden {
     display: none;
 }
@@ -54,27 +52,29 @@
     background-color: brown;
 }
 
-.dark {
-    background-image: url("point_bot_dark.svg");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center center;
-}
-
-.light {
-    /*background-color: blanchedalmond;*/
-    background-image: url("point_bot_light.svg");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center center;
-}
-
 .point {
     width: 16.667%;
     height: 100%;
     display: flex;
     flex-flow: column-reverse;
     align-items: center;
+}
+
+.point.dark {
+    background-image: url("point_bot_dark.svg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.point.light {
+    /*background-color: blanchedalmond;*/
+    color: green;
+    fill: currentColor;
+    background-image: url("point_bot_light.svg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
 }
 
 .top>.point {
